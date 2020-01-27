@@ -1,0 +1,156 @@
+#include<iostream>
+#include<stdlib.h>
+using namespace std;
+
+#define MVNum 10				
+#define MAXINT 9999			
+
+typedef int arcType;
+typedef char vertexType;
+
+typedef struct MNode {
+	vertexType vertex[MVNum];	 
+	arcType Arc[MVNum][MVNum];	 
+	int vexnum, arcnum;
+}GraphNode, * Graph;
+
+int Init(Graph& G) {
+	G = (GraphNode*)malloc(sizeof(GraphNode));
+	G->vexnum = 0;
+	G->arcnum = 0;
+	if (G) return 1;
+	else cout << "初始化出错！" << endl;
+	return 0;
+}
+
+int FindPos(Graph G, char a) 
+{
+	int pos = -1;
+	for (int i = 0; i < G->vexnum; i++) {
+		if (G->vertex[i] == a) {
+			pos = i;
+		}
+	}
+	return pos;
+}
+
+void CreateUDN(Graph G)			
+{
+	int num = 0,					//控制输入顶点数 
+		pos1, pos2,				//确认顶点位置 
+		i, j,
+		weight;					//权值 
+	char a,
+		b,
+		ch;					//顶点 
+
+	for (i = 0; i < MVNum; i++) { 	//初始化弧
+		for (j = 0; j < MVNum; j++) {
+			G->Arc[i][j] = MAXINT;
+		}
+	}
+
+	printf("请输入顶点(不超过10个，以#结束):\n");
+	cin >> ch;
+	while (ch != '#' && num < 10) {
+		G->vertex[num] = ch;
+		cin >> ch;
+		num++;
+	}
+	G->vexnum = num;  //顶点个数
+	cout << "请输入对应的弧（ab与ba是一样的边）和权值，以###结束" << endl;
+	cin >> a >> b >> weight;
+	while (a != '#' && b != '#') {
+		cout << a << "-" << b << ":" << weight << endl;
+		pos1 = FindPos(G, a);
+		pos2 = FindPos(G, b);
+		printf("位置a:%d,位置b:%d\n", pos1, pos2);
+		if (pos1 != -1 && pos2 != -1) 
+		{  //忽略不存在的顶点
+			G->Arc[pos1][pos2] = weight;
+			G->Arc[pos2][pos1] = weight;
+			G->arcnum++;
+		}
+		cin >> a >> b >> weight;
+	}
+}
+
+void PrintGraph(Graph g) {
+	cout << "图的顶点为:" << endl;
+	for (int i = 0; i < g->vexnum; i++) {
+		cout << g->vertex[i] << " ";
+	}
+	cout << endl;
+	cout << "图的邻接矩阵为:" << endl;
+	for (int i = 0; i < g->vexnum; i++) {
+		for (int j = 0; j < g->vexnum; j++) {
+			printf("%10d ", g->Arc[i][j]);
+		}
+		cout << endl;
+	}
+}
+
+
+typedef struct {
+	vertexType adjvex;			//最小边在U中的顶点 
+	arcType lowcost;			//最小边的权值 
+}ClosEdge;
+
+ClosEdge closedge[MVNum];
+
+int Min(Graph g, ClosEdge a[]) {
+	int j = 0;
+	int min = MAXINT;
+	for (int i = 0; i < g->vexnum; i++) {
+		if (a[i].lowcost != 0 && a[i].lowcost < min) {
+			min = a[i].lowcost;
+			j = i;
+		}
+	}
+	return j;
+}
+
+int Prim(Graph g, vertexType u) {			//分成两堆。U集合与V集合(总-U) 
+	int weight = 0;							//累计最小生成树的权值 
+	int i, j, k;
+
+	k = FindPos(g, u);  						//以u为起点，确定u的位置 
+
+	for (i = 0; i < g->vexnum; i++) {
+		if (i != k) {
+			closedge[i] = { u,g->Arc[k][i] }; 	//u顶点到，i位置确定的顶点，的权值，初始化为邻接表中对应的值 
+		}
+	}
+
+	closedge[k].lowcost = 0;   				// 初始时U集合只有u点，在U集合里，就记为0 
+
+	for (j = 1; j < g->vexnum; j++) {
+
+		k = Min(g, closedge);					//找到最小权值。当然也就知道顶点 
+
+		vertexType u0 = closedge[k].adjvex; 
+		vertexType v0 = g->vertex[k];		
+		printf("%c,%c\n", u0, v0);
+
+		weight = weight + g->Arc[FindPos(g, u0)][k];				//最小生成树的权值 
+
+		closedge[k].lowcost = 0;								//将k确定的顶点放入集合U中 
+
+		for (i = 0; i < g->vexnum; i++) {   				//由于k顶点加入U中，检查k到其他顶点的权值是否比k加入之前小  
+			if (g->Arc[k][i] < closedge[i].lowcost) {
+				closedge[i] = { g->vertex[k],g->Arc[k][i] };	// 更新
+			}
+		}
+	}
+	return weight;
+}
+
+int main()
+{
+	Graph G = NULL;
+	Init(G);
+	CreateUDN(G);
+	PrintGraph(G);
+	cout << "权值" << Prim(G, 'a') << endl;
+	return 0;
+}
