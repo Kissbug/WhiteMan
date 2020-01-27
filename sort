@@ -1,0 +1,258 @@
+#include<iostream.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include<iomanip.h>
+#include<time.h>
+#define ElemType int
+const int N=100;
+
+//直接插入排序
+void insertsort(ElemType R[],int n)
+{
+	int cs1=0;									//比较次数
+	int cw1=0;									//交换次数
+	int j=0,temp;
+	for(int i=1;i<n;i++)						//i表示插入次数,共进行n-1次插入
+	{
+		for(i=1;i<=99;i++)
+			if(R[i]<R[i-1])
+			{
+				temp=R[i];
+				cs1++;
+				for(j=i-1;temp<R[j];--j)
+				{
+					R[j+1]=R[j];
+					cw1++;
+					cs1++;
+				
+				}
+
+				R[j+1]=temp;
+			}
+	}
+cout<<"直接插入排序的 比较 次数为："<<cs1<<endl;
+	cout<<"直接插入排序的 交换 次数为："<<cw1<<endl;
+}
+
+
+//希尔排序
+void ShellSort(ElemType R[],int n)
+{	
+	int d,j,i,temp;
+	for(d=n/2;d>=1;d=d/2)
+	{
+		for(i=d+1;i<=n;i++)
+		{
+		temp=R[i];
+		j=i-d;
+		while((j>0)&&(temp<R[j]))
+		{
+			R[j+d]=R[j];
+			j=j-d;
+		}
+		R[j+d]=temp;
+		}
+	}
+
+
+} 
+
+
+//冒泡排序
+void Bubblesort(ElemType R[],int n)
+{
+	int i,j,a;
+for(j=n;j>0;j--)
+	for(i=0;i<j-1;i++)
+		if(R[i]>R[i+1])
+		{
+			a=R[i];
+			R[i]=R[i+1];
+			R[i+1]=a;
+		}
+
+
+}
+
+
+//快速排序
+int Partition(ElemType R[],int left,int right)
+{
+		int pk;
+	
+		R[0]=R[left];pk=R[left];
+		while(left<right)
+		{
+			while(left<right&&R[right]>=pk)--right;
+		    R[left]=R[right];
+			while(left<right&&R[left]<=pk)++left;
+			R[right]=R[left];
+		}
+		R[left]=R[0];
+		return left;
+	}
+void quicksort(ElemType R[],int left,int right)
+{
+
+
+
+	int i;
+	if(left<=right)
+	{
+		i=Partition(R,left,right);
+		quicksort(R,left,i-1);
+		quicksort(R,i+1,right);
+
+	}
+}
+
+//直接选择排序
+
+int s(ElemType R[],int i)
+{
+	int k,j,n;
+    	k=i;
+	for(j=i+1;j<=n;j++)
+	{
+		if(R[j]<R[k])
+			k=j;
+	}
+		return k;
+}
+void selectsort(ElemType R[],int n)
+{
+	int j,i,a;
+	for(i=0;i<n;++i)
+	{
+		j=s(R,i);
+		if(i!=j)
+		{a=R[i];
+		R[i]=R[j];
+		R[j]=a;
+		};
+			
+	}
+	
+
+
+}
+
+
+//堆排序
+void H(ElemType R,int s,int m)
+{
+	r=R[s];
+	for (j=2*s;j<=m;j*=2)
+	{
+		if(j<m&&LT(R[j],R[j+1])) ++j;
+		if(!LT(r,R[j])) break;
+		R[s]=R[j];
+		s=j;
+	}
+	R[s]=r;
+}
+
+void HeapSort(ElemType R[],int n)
+{
+	int i;
+	
+	for(i=n/2;i>=1;i--)
+		HeapAdjust(r,i,n);
+	for(i=1;i>n;i++)
+	{
+		R[1]←→R[n-i+1];
+		HeapAdjust(r,1,n-i);
+	}
+}
+
+
+//归并排序
+void MergeSort(ElemType R[],int n)
+{
+}
+
+
+//基数排序
+void jishuSort(ElemType R[],int n)
+{
+}
+
+
+//输出数组中的元素
+void print(ElemType R[],int n)
+{
+	for(int i=0;i<=n-1;i++)
+	{
+		if(i%10==0)
+		{
+			cout<<endl;
+		}
+		cout<<R[i]<<setw(6);
+	}
+	cout<<endl;
+}
+
+
+void main()
+{
+	char ch;
+	ElemType R[N],T[N];
+
+	srand(0);
+	for(int i=0;i<=N-1;i++)
+		T[i]=rand();						//产生随机数
+	print(T,N);								//输出随机数
+
+	cout<<"直接插入排序开始(y／n)";
+	cin>>ch;
+
+	if(ch=='y')
+	{ 
+		for(i=0;i<N;i++)
+			R[i]=T[i];
+		insertsort(R,N);
+		print(R,N);
+	}
+
+	cout<<"希尔排序开始(y／n)";
+	cin>>ch;
+
+	if(ch=='y')
+	{ 
+		for(i=0;i<N;i++)
+			R[i]=T[i];
+		ShellSort(R,N-1);
+		print(R,N);
+	}
+		cout<<"冒泡排序开始(y／n)";
+	cin>>ch;
+
+	if(ch=='y')
+	{ 
+		for(i=0;i<N;i++)
+			R[i]=T[i];
+		Bubblesort(R,N);
+		print(R,N);
+	}
+    	cout<<"快速排序开始(y／n)";
+	cin>>ch;
+    int L;
+	if(ch=='y')
+	{ 
+		for(i=0;i<N;i++)
+			R[i]=T[i];
+		quicksort(R,1,N);
+		print(R,N);
+	}
+	   	cout<<"选择排序开始(y／n)";
+	cin>>ch;
+	if(ch=='y')
+	{ 
+		for(i=0;i<N;i++)
+			R[i]=T[i];
+		selectsort(R,N);
+		print(R,N);
+	}
+
+
+
